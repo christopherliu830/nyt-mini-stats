@@ -5,10 +5,6 @@ import { accounts } from './config.mjs';
 import { storage } from './storage.mjs';
 import * as nyt from './api/nyt.mjs';
 
-const redis = createClient();
-await redis.connect();
-redis.on('error', console.log);
-
 const app = express();
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.urlencoded({ extended: false }));
@@ -16,26 +12,6 @@ app.use(express.json());
 
 const router = express.Router();
 app.use('/api', router);
-
-router.post('/login', async (req, res) => {
-
-  if (await redis.get(req.body.username)) {
-    res.status(200).send();
-  }
-
-  const username = req.body.username;
-  const password = req.body.password;
-
-  try {
-    const token = await nyt.getToken(username, password);
-    redis.set(username, token);
-    res.status(200).send();
-  }
-  catch (e) {
-    res.status(500).send();
-    console.log(e);
-  }
-})
 
 router.use(async (req, res, next) => {
   if (req.query.name) {
@@ -54,6 +30,7 @@ router.post('/set-token', async (req, res) => {
   }
 
   await storage.set(name, token);
+  await storage.pushSet('users', name);
   res.status(201).send();
 })
 

@@ -1,10 +1,16 @@
-import { Table, Tr, Td, Tbody, Thead, Th } from '@chakra-ui/react';
+import { Table, Tr, Td, Tbody, Thead, Th, Text } from '@chakra-ui/react';
 import { scaleLinear } from 'd3';
 import { useState, useEffect, useMemo } from 'react';
 import { puzzleByDate } from '../../api/nyt';
 
 const Cell = (props) => (
-  <Td border="2px solid rgba(0, 0, 0, 0.2)" textAlign="center" fontSize="24px" fontWeight="600" {...props} />
+  <Td
+    border="2px solid rgba(0, 0, 0, 0.2)"
+    textAlign="center"
+    fontWeight="600"
+    p="0"
+    {...props}
+  />
 );
 
 export function PuzzleGrid({ puzzle, label}) {
@@ -29,19 +35,25 @@ export function PuzzleGrid({ puzzle, label}) {
   const getColor = x => x ? color(x) : 'black';
 
   return (
-    <Table w="300px" border="4px solid" borderColor="black">
+    <Table w="220px" border="4px solid" borderColor="black" tableLayout="fixed">
       <Thead>
         <Tr>
           <Th colSpan="5" textAlign="center" borderBottom="2px solid" borderColor="black">
-            {label} - {puzzle.calcs.secondsSpentSolving}
+            <Text position="relative" fontSize="2xl">
+              {label} - {puzzle.calcs.secondsSpentSolving}
+            </Text>
           </Th>
         </Tr>
       </Thead>
-      <Tbody h="300px">
+      <Tbody h="220px">
         {rows.map((row, idx) => (
           <Tr key={idx}>
             {row.map((cell, idx) => (
-              <Cell key={idx} bg={getColor(cell.timestamp)}>{cell.guess}</Cell>
+              <Cell key={idx} bg={getColor(cell.timestamp)} w={`${(100/width)}%`}>
+                <Text position="relative" fontSize="3xl">
+                  {cell.guess}
+                </Text>
+              </Cell>
             ))}
           </Tr>
         ))}

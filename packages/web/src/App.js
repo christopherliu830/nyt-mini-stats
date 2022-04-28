@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Button, ChakraProvider, Text } from '@chakra-ui/react';
+import { Box, Button, ChakraProvider, Container, FormControl, FormLabel, Input, Text } from '@chakra-ui/react';
 import { getPuzzles, getUsers, puzzleByDate } from './api/nyt';
 import { PuzzleGrid } from './components/PuzzleGrid';
 import { Leaderboard } from './components/Leaderboard';
@@ -23,21 +23,21 @@ function App() {
       .then(setSolves);
   }, [users, date]);
 
-  console.log(solves);
-
   return (
     <ChakraProvider>
-      <Box p="16px">
-        <DatePicker p="8px 0" selected={date} onChange={setDate} w="240px" />
-        <Box d="flex" p="8px 0" gap="8px" flexWrap="wrap">
-        {
-          solves && solves.map(solve => (
-            <PuzzleGrid date={date} key={solve.user} label={solve.user} puzzle={solve.puzzle} />
-          ))
-        }
-        </Box>
-        {solves && <Leaderboard p="8px 0" stats={solves} />}
-      </Box>
+      <div>
+        <Container maxW="container.xl">
+          <DatePicker p="8px 0" selected={date} onChange={setDate} w="240px" />
+          <Box ml="auto" mr="auto" d="flex" p="8px 0" gap="8px" flexWrap="wrap" minW="0">
+          {
+            solves && solves.map(solve => (
+              <PuzzleGrid date={date} key={solve.user} label={solve.user} puzzle={solve.puzzle} />
+            ))
+          }
+          </Box>
+          {solves && <Leaderboard p="8px 0" stats={solves} />}
+        </Container>
+      </div>
     </ChakraProvider>
   );
 }

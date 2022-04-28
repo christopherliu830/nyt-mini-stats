@@ -5,7 +5,6 @@ import { request } from 'express';
 
 const API_ROOT = 'https://nyt-games-prd.appspot.com/svc/crosswords';
 const PUZZLE_INFO = `${API_ROOT}/v3/puzzles.json`;
-const TODAYS_MINI = `${API_ROOT}/v6/puzzle/mini.json`;
 const SOLVE_INFO = `${API_ROOT}/v6/game`;
 const DATE_FORMAT = '%Y-%m-%d';
 const parseDate = utcParse(DATE_FORMAT);
@@ -28,7 +27,7 @@ export function range() {
 export async function puzzleByDate(token, date) {
   const puzzle = await getPuzzles(token, {
     start: formatDate(utcDay.offset(parseDate(date), -1)),
-    end: formatDate(utcDay.offset(parseDate(date), -1))
+    end: formatDate(utcDay.offset(parseDate(date)))
   });
 
   const solves = await getSolves(token, [puzzle]);

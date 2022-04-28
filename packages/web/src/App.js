@@ -28,12 +28,7 @@ function App() {
   return (
     <ChakraProvider>
       <Box p="16px">
-
-        <Box d="flex" p="8px 0">
-          <DatePicker selected={date} onChange={setDate} />
-          <Button ml="8px">Refresh</Button>
-        </Box>
-
+        <DatePicker p="8px 0" selected={date} onChange={setDate} w="240px" />
         <Box d="flex" p="8px 0" gap="8px" flexWrap="wrap">
         {
           solves && solves.map(solve => (
@@ -41,7 +36,6 @@ function App() {
           ))
         }
         </Box>
-
         {solves && <Leaderboard p="8px 0" stats={solves} />}
       </Box>
     </ChakraProvider>

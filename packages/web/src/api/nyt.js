@@ -5,8 +5,10 @@ const PUZZLE_INFO = `${API_ROOT}/v3/puzzles.json`;
 const SOLVE_INFO = `${API_ROOT}/v6/game`;
 const DATE_FORMAT = '%Y-%m-%d';
 
+const baseUrl = process.env.REACT_APP_BASE_URL;
+
 export async function login({ username, token }) {
-  const response = await fetch('/api/set-token', {
+  const response = await fetch(baseUrl + '/api/set-token', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -18,14 +20,21 @@ export async function login({ username, token }) {
   return data;
 }
 
+export async function puzzleByDate(name, date) {
+  const response = await fetch(baseUrl + `/api/puzzles?name=${name}&date=${date}`)
+  const data = await response.json();
+  return data[0];
+}
+
 export async function getPuzzles(name) {
-  const response = await fetch(`/api/puzzles?name=${name}`)
+  const response = await fetch(baseUrl + `/api/puzzles?name=${name}`)
   const data = await response.json();
   return data;
 }
 
 export async function getSolves(name, puzzles) {
-  const response = await fetch(`/api/solves?name=${name}`, {
+  console.log('getsolves', name);
+  const response = await fetch(baseUrl + `/api/solves?name=${name}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -37,7 +46,7 @@ export async function getSolves(name, puzzles) {
 }
 
 export async function getUsers() {
-  const response = await fetch(`/api/users`);
+  const response = await fetch(baseUrl + `/api/users`);
   const data = await response.json();
   return data;
 }

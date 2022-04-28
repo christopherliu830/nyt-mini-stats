@@ -1,31 +1,43 @@
 import fetch from 'node-fetch';
 import { min, utcFormat, utcMonth, utcDay, utcParse } from 'd3';
 import { storage } from '../storage.mjs';
+import { request } from 'express';
 
 const API_ROOT = 'https://nyt-games-prd.appspot.com/svc/crosswords';
 const PUZZLE_INFO = `${API_ROOT}/v3/puzzles.json`;
+const TODAYS_MINI = `${API_ROOT}/v6/puzzle/mini.json`;
 const SOLVE_INFO = `${API_ROOT}/v6/game`;
 const DATE_FORMAT = '%Y-%m-%d';
+const parseDate = utcParse(DATE_FORMAT);
+const formatDate = utcFormat(DATE_FORMAT);
 
 export function range() {
   const today = new Date();
-  const dateFormat = utcFormat(DATE_FORMAT);
   const starts = utcMonth
     .every(3)
     .range(new Date().setFullYear(today.getFullYear() - 1) , today, 1);
 
   const ranges = starts.map((start) => ({
-    start: dateFormat(start),
-    end: dateFormat(min([today, utcDay.offset(utcMonth.offset(start, 3), -1)]))
+    start: formatDate(start),
+    end: formatDate(min([today, utcDay.offset(utcMonth.offset(start, 3), -1)]))
   }));
 
   return ranges;
 }
 
-export async function getPuzzles(token) {
-  const dateParser = utcParse(DATE_FORMAT);
-  const ranges = range();
-  return (
+export async function puzzleByDate(token, date) {
+  const puzzle = await getPuzzles(token, {
+    start: formatDate(utcDay.offset(parseDate(date), -1)),
+    end: formatDate(utcDay.offset(parseDate(date), -1))
+  });
+
+  const solves = await getSolves(token, [puzzle]);
+  return { ...puzzle, ...solves[0] };
+}
+
+export async function getPuzzles(token, dates) {
+  const ranges = dates ? [dates] : range();
+  const puzzles = (
     await Promise.all(ranges.map(({start, end}) => {
       const searchParams = new URLSearchParams({
         publish_type: 'mini',
@@ -40,20 +52,23 @@ export async function getPuzzles(token) {
   )
     .map(puzzle => puzzle.results)
     .flat()
-    .map(puzzle => ({ ...puzzle, date: dateParser(puzzle.print_date) }));
+    .map(puzzle => ({ ...puzzle, date: parseDate(puzzle.print_date) }));
+
+  return await getSolves(token, puzzles);
 }
 
-export async function getSolves(token, puzzles) {
+async function getSolves(token, puzzles) {
+  console.log(token, puzzles);
   const getSolve = async (puzzle) => {
     const response = await requestNyt(`${SOLVE_INFO}/${puzzle.puzzle_id}.json`, token)
     return { ...puzzle, ...response };
   };
 
   const solves = await Promise.all(puzzles.filter(p => p.solved).map(getSolve))
-  return solves
+  return solves;
 }
 
-async function requestNyt(path, token) {
+async function requestNyt(path, token = '') {
   const key = hashCode(path + token);
 
   if (await storage?.get(key)) return JSON.parse(await storage.get(key));

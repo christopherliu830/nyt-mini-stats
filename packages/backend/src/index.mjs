@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import { createClient } from 'redis';
 import { accounts } from './config.mjs';
 import { storage } from './storage.mjs';
@@ -9,6 +10,7 @@ await redis.connect();
 redis.on('error', console.log);
 
 const app = express();
+app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
@@ -57,27 +59,33 @@ router.post('/set-token', async (req, res) => {
 
 router.get('/puzzles', async (req, res) => {
   try {
-    const response = await nyt.getPuzzles(req.token);
+    let response;
+    if (req.query.date) {
+      response = await nyt.puzzleByDate(req.token, req.query.date);
+    }
+    else {
+      response = await nyt.getPuzzles(req.token);
+    }
     res.status(200).send(response);
   }
   catch (e) {
-    res.status(404).send({ message: 'puzzles not found' });
+    console.log(e);
+    res.status(500).send({ message: 'puzzles not found' });
+  }
+})
+
+router.get('/', async (req, res) => {
+  try {
+    res.status(200).send(response);
+  } catch (e) {
+    console.log(e);
+    res.status(500).send();
   }
 })
 
 router.get('/users', async (req, res) => {
   const users = await storage.get('users');
   res.status(200).send(users);
-})
-
-router.post('/solves', async (req, res) => {
-  try {
-    const response = await nyt.getSolves(req.token, req.body);
-    res.status(200).send(response);
-  } catch (e) {
-    console.log(e);
-    res.status(404).send({ message: 'solves not found' })
-  }
 })
 
 app.use(router);

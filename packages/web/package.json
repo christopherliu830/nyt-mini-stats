@@ -2,7 +2,8 @@
   "name": "nyt-mini-stats",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:8080",
+  "proxy": "https://chrisliu.dev/nyt/",
+  "homepage": "/nyt",
   "dependencies": {
     "@chakra-ui/react": "^1.8.8",
     "@emotion/react": "^11.9.0",

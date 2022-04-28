@@ -1,4 +1,6 @@
+import fetch from 'node-fetch';
 import { min, utcFormat, utcMonth, utcDay, utcParse } from 'd3';
+import { storage } from '../storage.mjs';
 
 const API_ROOT = 'https://nyt-games-prd.appspot.com/svc/crosswords';
 const PUZZLE_INFO = `${API_ROOT}/v3/puzzles.json`;
@@ -30,7 +32,7 @@ export async function getPuzzles(token) {
         date_start: start,
         date_end: end,
         sort_order: 'asc',
-        sord_by: 'print_date'
+        sort_by: 'print_date'
       }).toString();
       const url = `${PUZZLE_INFO}?${searchParams}`;
       return requestNyt(url, token);
@@ -47,19 +49,22 @@ export async function getSolves(token, puzzles) {
     return { ...puzzle, ...response };
   };
 
-  console.log(puzzles.filter(p => p))
-  console.log(puzzles)
-
   const solves = await Promise.all(puzzles.filter(p => p.solved).map(getSolve))
   return solves
 }
 
 async function requestNyt(path, token) {
   const key = hashCode(path + token);
-  if (localStorage?.getItem(key)) return JSON.parse(localStorage.getItem(key));
+
+  if (await storage?.get(key)) return JSON.parse(await storage.get(key));
+
   const response = await fetch(path, { headers: { 'nyt-s': token }, });
   const data = await response.json();
-  localStorage.setItem(key, JSON.stringify(data));
+
+  if (storage) {
+    await storage.set(key, JSON.stringify(data));
+  }
+
   return data;
 }
 

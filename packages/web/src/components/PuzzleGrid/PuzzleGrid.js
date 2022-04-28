@@ -5,8 +5,7 @@ const Cell = (props) => (
   <Td border="2px solid rgba(0, 0, 0, 0.2)" textAlign="center" fontSize="24px" fontWeight="600" {...props} />
 );
 
-export function PuzzleGrid({ solve }) {
-  console.log(solve);
+export function PuzzleGrid({ label, solve }) {
   const { cells } = solve.board;
   const width = Math.floor(Math.sqrt(cells.length));
   const height = width;
@@ -25,11 +24,11 @@ export function PuzzleGrid({ solve }) {
 
   return (
     <>
-      <TableContainer>
+      <TableContainer p="4px">
         <Table w="300px" border="4px solid" borderColor="black">
           <Thead>
             <Th colSpan="5" textAlign="center" borderBottom="2px solid" borderColor="black">
-              Me
+              {label}
             </Th>
           </Thead>
           <Tbody h="300px">

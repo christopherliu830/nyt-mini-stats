@@ -25,8 +25,9 @@ export function range() {
 }
 
 export async function puzzleByDate(token, date) {
+  console.log(date);
   const puzzle = await getPuzzles(token, {
-    start: formatDate(utcDay.offset(parseDate(date), -1)),
+    start: formatDate(parseDate(date)),
     end: formatDate(utcDay.offset(parseDate(date)))
   });
 
@@ -35,6 +36,7 @@ export async function puzzleByDate(token, date) {
 }
 
 export async function getPuzzles(token, dates) {
+    console.log(dates);
   const ranges = dates ? [dates] : range();
   const puzzles = (
     await Promise.all(ranges.map(({start, end}) => {
@@ -57,7 +59,6 @@ export async function getPuzzles(token, dates) {
 }
 
 async function getSolves(token, puzzles) {
-  console.log(token, puzzles);
   const getSolve = async (puzzle) => {
     const response = await requestNyt(`${SOLVE_INFO}/${puzzle.puzzle_id}.json`, token)
     return { ...puzzle, ...response };

@@ -78,13 +78,12 @@ height: 100%;
 outline: 0;
 }
 
-.react-datepicker__navigation--next--with-time:not(.react-datepicker__navigation--next--with-today-button) {
-right: 90px;
+.react-datepicker__navigation {
+  top: 9px;
 }
 
-.react-datepicker__navigation--previous,
-.react-datepicker__navigation--next {
-height: 8px;
+.react-datepicker__navigation--next--with-time:not(.react-datepicker__navigation--next--with-today-button) {
+right: 90px;
 }
 
 .react-datepicker__navigation--previous {

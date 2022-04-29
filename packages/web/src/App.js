@@ -4,9 +4,9 @@ import { getPuzzles, getUsers, puzzleByDate } from './api/nyt';
 import { PuzzleGrid } from './components/PuzzleGrid';
 import { Leaderboard } from './components/Leaderboard';
 import { DatePicker } from './components/DatePicker';
-import { utcFormat } from 'd3';
+import { timeFormat } from 'd3';
 
-const formatDate = utcFormat('%Y-%m-%d');
+const formatDate = timeFormat('%Y-%m-%d');
 
 function App() {
   const [users, setUsers] = useState([]);

@@ -35,7 +35,7 @@ export function PuzzleGrid({ puzzle, label}) {
   const getColor = x => x ? color(x) : 'black';
 
   return (
-    <Table w="220px" border="4px solid" borderColor="black" tableLayout="fixed">
+    <Table w="220px" border="4px solid" borderColor="black" tablelayout="fixed">
       <Thead>
         <Tr>
           <Th colSpan={width} textAlign="center" borderBottom="2px solid" borderColor="black">

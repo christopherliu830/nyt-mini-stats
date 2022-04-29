@@ -24,7 +24,7 @@ export function Leaderboard({ stats, ...rest }) {
         </Tr>
       </Thead>
       <Tbody>
-        {placements.map(({ user, puzzle }) => (
+        {placements.map(({ user, puzzle }) => (puzzle && 
           <Tr key={user}>
             <Td fontWeight={600}>{user}</Td>
             <Td>{puzzle?.calcs.secondsSpentSolving ?? 'Not Done'}</Td>

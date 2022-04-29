@@ -69,9 +69,9 @@ export function PuzzleGrid({ puzzle, label, viewTime }) {
     <Table w="220px" border="4px solid" borderColor="black" tablelayout="fixed">
       <Thead>
         <Tr>
-          <Th colSpan={width} textAlign="center" borderBottom="2px solid" borderColor="black">
+          <Th colSpan={width} textAlign="center" borderBottom="2px solid" borderColor="black" pl={0} pr={0}>
             <Text position="relative" fontSize="2xl">
-              {label} - {time}
+              {label} - {`${Math.floor(time/60)}:${time % 60}`}
             </Text>
           </Th>
         </Tr>

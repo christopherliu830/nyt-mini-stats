@@ -5,6 +5,7 @@ import { PuzzleGrid } from './components/PuzzleGrid';
 import { Leaderboard } from './components/Leaderboard';
 import { DatePicker } from './components/DatePicker';
 import { timeFormat } from 'd3';
+import { PuzzleRace } from './components/PuzzleRace/PuzzleRace';
 
 const formatDate = timeFormat('%Y-%m-%d');
 
@@ -28,13 +29,7 @@ function App() {
       <div>
         <Container maxW="container.xl">
           <DatePicker p="8px 0" selected={date} onChange={setDate} w="240px" />
-          <Box ml="auto" mr="auto" d="flex" p="8px 0" gap="8px" flexWrap="wrap" minW="0">
-          {
-            solves && solves.map(solve => (
-              <PuzzleGrid date={date} key={solve.user} label={solve.user} puzzle={solve.puzzle} />
-            ))
-          }
-          </Box>
+          <PuzzleRace date={date} solves={solves} />
           {solves && <Leaderboard p="8px 0" stats={solves} />}
         </Container>
       </div>

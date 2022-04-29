@@ -28,7 +28,6 @@ function App() {
       <div>
         <Container maxW="container.xl">
           <DatePicker p="8px 0" selected={date} onChange={setDate} w="240px" />
-          Test Test
           <Box ml="auto" mr="auto" d="flex" p="8px 0" gap="8px" flexWrap="wrap" minW="0">
           {
             solves && solves.map(solve => (

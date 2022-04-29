@@ -1,7 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import { createClient } from 'redis';
-import { accounts } from './config.mjs';
 import { storage } from './storage.mjs';
 import * as nyt from './api/nyt.mjs';
 
@@ -37,11 +35,12 @@ router.post('/set-token', async (req, res) => {
 router.get('/puzzles', async (req, res) => {
   try {
     let response;
+    const useCache = req.query.useCache;
     if (req.query.date) {
-      response = await nyt.puzzleByDate(req.token, req.query.date);
+      response = await nyt.puzzleByDate(req.token, req.query.date, useCache ?? true);
     }
     else {
-      response = await nyt.getPuzzles(req.token);
+      response = await nyt.getPuzzles(req.token, undefined, useCache ?? true);
     }
     res.status(200).send(response);
   }

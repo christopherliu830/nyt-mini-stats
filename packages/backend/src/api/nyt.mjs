@@ -7,6 +7,7 @@ const API_ROOT = 'https://nyt-games-prd.appspot.com/svc/crosswords';
 const PUZZLE_INFO = `${API_ROOT}/v3/puzzles.json`;
 const SOLVE_INFO = `${API_ROOT}/v6/game`;
 const DATE_FORMAT = '%Y-%m-%d';
+const EXPIRE_TIME = 60 * 60 * 12; // Cache key duration
 const parseDate = utcParse(DATE_FORMAT);
 const formatDate = utcFormat(DATE_FORMAT);
 
@@ -24,19 +25,17 @@ export function range() {
   return ranges;
 }
 
-export async function puzzleByDate(token, date) {
-  console.log(date);
+export async function puzzleByDate(token, date, useCache) {
   const puzzle = await getPuzzles(token, {
     start: formatDate(parseDate(date)),
     end: formatDate(utcDay.offset(parseDate(date)))
-  });
+  }, useCache);
 
   const solves = await getSolves(token, [puzzle]);
   return { ...puzzle, ...solves[0] };
 }
 
-export async function getPuzzles(token, dates) {
-    console.log(dates);
+export async function getPuzzles(token, dates, useCache) {
   const ranges = dates ? [dates] : range();
   const puzzles = (
     await Promise.all(ranges.map(({start, end}) => {
@@ -48,7 +47,7 @@ export async function getPuzzles(token, dates) {
         sort_by: 'print_date'
       }).toString();
       const url = `${PUZZLE_INFO}?${searchParams}`;
-      return requestNyt(url, token);
+      return requestNyt(url, token, useCache);
     }))
   )
     .map(puzzle => puzzle.results)
@@ -68,28 +67,19 @@ async function getSolves(token, puzzles) {
   return solves;
 }
 
-async function requestNyt(path, token = '') {
-  const key = hashCode(path + token);
-
-  if (await storage?.get(key)) return JSON.parse(await storage.get(key));
+async function requestNyt(path, token = '', useCache = true) {
+  const key = `${token}:${path}`;
+  if (useCache && await storage?.get(key)) {
+    return JSON.parse(await storage.get(key));
+  }
 
   const response = await fetch(path, { headers: { 'nyt-s': token }, });
   const data = await response.json();
 
   if (storage) {
     await storage.set(key, JSON.stringify(data));
+    storage.expire(key, EXPIRE_TIME);
   }
 
   return data;
 }
-
-const hashCode = function(str) {
-  var hash = 0, i, chr;
-  if (str.length === 0) return hash;
-  for (i = 0; i < str.length; i++) {
-    chr   = str.charCodeAt(i);
-    hash  = ((hash << 5) - hash) + chr;
-    hash |= 0; // Convert to 32bit integer
-  }
-  return hash;
-};

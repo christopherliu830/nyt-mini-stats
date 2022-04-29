@@ -25,8 +25,10 @@ export const storage = {
 
   push: async (key, val) => await redis.lPush(key, val),
 
-  pushSet: async (key, val) => await redis.sAdd(key, val)
-}
+  pushSet: async (key, val) => await redis.sAdd(key, val),
+
+  expire: async (key, time) => await redis.expire(key, time)
+};
 
 for(const account of accounts) {
   storage.set(account.name, account.token);

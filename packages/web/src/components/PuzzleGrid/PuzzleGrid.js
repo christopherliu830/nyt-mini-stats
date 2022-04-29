@@ -12,22 +12,25 @@ const createColorScale = (color, domain) => scaleLinear().domain(domain).range([
 export function PuzzleGrid({ puzzle, label, viewTime }) {
 
   const { cells } = puzzle.board;
-  const width = Math.floor(Math.sqrt(cells.length));
-  const height = width;
-  const rows = [];
+  const time = puzzle.calcs.secondsSpentSolving;
 
+  const width = Math.floor(Math.sqrt(cells.length));
+
+  const rows = [];
   for (let i = 0; i < width; i++) {
     const row = [];
-    for (let j = 0; j < height; j++) {
+    for (let j = 0; j < width; j++) {
       row.push(cells[i * width + j]);
     }
     rows.push(row);
   }
 
-  const blue = createColorScale('blue', [0, puzzle.calcs.secondsSpentSolving]);
-  const yellow = createColorScale('yellow', [0, puzzle.calcs.secondsSpentSolving]);
-  const red = createColorScale('red', [0, puzzle.calcs.secondsSpentSolving]);
+  const blue = createColorScale('blue', [0, time]);
+  const yellow = createColorScale('yellow', [0, time]);
+  const red = createColorScale('red', [0, time]);
 
+  // If we rerender every time viewTime changes the scrubbing ends up slow
+  // So, create a dependency array that changes only when a cell becomes visible/unvisible.
   const visibilityArray = puzzle.board.cells.map(cell => viewTime > cell.timestamp);
 
   const drawCell = useCallback((cell, key) => {
@@ -62,17 +65,13 @@ export function PuzzleGrid({ puzzle, label, viewTime }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, visibilityArray);
 
-  if (!puzzle) {
-    return <></>;
-  }
-
   return (
     <Table w="220px" border="4px solid" borderColor="black" tablelayout="fixed">
       <Thead>
         <Tr>
           <Th colSpan={width} textAlign="center" borderBottom="2px solid" borderColor="black">
             <Text position="relative" fontSize="2xl">
-              {label} - {puzzle.calcs.secondsSpentSolving}
+              {label} - {time}
             </Text>
           </Th>
         </Tr>

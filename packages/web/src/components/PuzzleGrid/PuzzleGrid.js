@@ -31,7 +31,7 @@ export function PuzzleGrid({ puzzle, label, viewTime }) {
 
   // If we rerender every time viewTime changes the scrubbing ends up slow
   // So, create a dependency array that changes only when a cell becomes visible/unvisible.
-  const visibilityArray = puzzle.board.cells.map(cell => viewTime > cell.timestamp);
+  const visibilityArray = puzzle.board.cells.map(cell => viewTime >= cell.timestamp);
 
   const drawCell = useCallback((cell, key) => {
     const visibility = (cell.blank || viewTime > cell.timestamp) ? 'visible' : 'hidden';

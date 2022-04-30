@@ -13,7 +13,9 @@ export function PuzzleRace({ date, solves }) {
   const slowestTime = solves
     ?.map((solve) => solve.puzzle?.calcs.secondsSpentSolving)
     .sort((a, b) => a - b)
+    .filter(time => time !== undefined)
     .pop();
+  
 
   return (
     <Box borderRadius={8} outline="solid 1px" outlineColor="gray.100" shadow="md" overflow="hidden">

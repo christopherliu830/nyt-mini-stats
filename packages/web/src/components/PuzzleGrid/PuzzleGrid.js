@@ -34,7 +34,7 @@ export function PuzzleGrid({ puzzle, label, viewTime }) {
   const visibilityArray = puzzle.board.cells.map(cell => viewTime >= cell.timestamp);
 
   const drawCell = useCallback((cell, key) => {
-    const visibility = (cell.blank || viewTime > cell.timestamp) ? 'visible' : 'hidden';
+    const visibility = (cell.blank || viewTime >= cell.timestamp) ? 'visible' : 'hidden';
 
     let bg = 'white';
     if (cell.checked) {

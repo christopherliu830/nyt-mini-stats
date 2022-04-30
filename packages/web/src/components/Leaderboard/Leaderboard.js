@@ -1,6 +1,6 @@
 import { Table, Tbody, Th, Thead, Tr, Td } from '@chakra-ui/react';
 
-const formatTime = (time) => (time ? `${Math.floor(time / 60)}:${time % 60}` : null);
+const formatTime = (time) => (time ? `${Math.floor(time / 60)}:${(time % 60).toString().padStart(2, '0')}` : null);
 
 export function Leaderboard({ stats, ...rest }) {
   const placements = [...stats].sort(

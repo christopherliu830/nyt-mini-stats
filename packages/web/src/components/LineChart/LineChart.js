@@ -74,7 +74,6 @@ export function LineChart({ solves, viewTime }) {
           puzzles.map((puzzle, idx) => {
             const data = formatPuzzle(puzzle);
             const annotationDatum = data[min([viewTime, data.length - 1])];
-            console.log(annotationDatum, data, puzzle.user);
             return (
               <Fragment key={puzzle.user}>
                 <LineSeries dataKey={puzzle.user} data={data} curve={curveBumpX} {...accessors} />

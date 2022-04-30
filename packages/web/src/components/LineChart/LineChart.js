@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { Box, Text } from '@chakra-ui/react';
 import {
   AnimatedAxis,
@@ -12,12 +13,18 @@ import {
 import { curveBumpX, min, range } from 'd3';
 
 export function LineChart({ solves, viewTime }) {
-  const slowestTime = solves
-    ?.map((solve) => solve.puzzle?.calcs.secondsSpentSolving)
+
+  const puzzles = solves
+    .filter(solve => solve.puzzle)
+    .map((solve) => ({ user: solve.user, ...solve.puzzle }))
+
+  const slowestTime = puzzles
+    ?.map((puzzle) => puzzle.calcs.secondsSpentSolving)
     .sort((a, b) => a - b)
     .pop();
 
-  const cellCount = solves[0].puzzle.board.cells.filter((c) => !c.blank).length;
+  // All puzzle boards are the same, just get first one
+  const cellCount = puzzles[0]?.board.cells.filter((c) => !c.blank).length;
 
   const formatPuzzle = (puzzle) => {
     const cells = puzzle.board.cells.filter((c) => c.timestamp !== undefined);
@@ -64,24 +71,25 @@ export function LineChart({ solves, viewTime }) {
       >
         <AnimatedAxis orientation="bottom" />
         {solves &&
-          solves.map((solve, idx) => {
-            const data = formatPuzzle(solve.puzzle);
+          puzzles.map((puzzle, idx) => {
+            const data = formatPuzzle(puzzle);
             const annotationDatum = data[min([viewTime, data.length - 1])];
+            console.log(annotationDatum, data, puzzle.user);
             return (
-              <>
-                <LineSeries key={solve.user} dataKey={solve.user} data={data} curve={curveBumpX} {...accessors} />
-                <Annotation key={'annotation' + solve.user} dataKey={solve.user} datum={annotationDatum} {...accessors}>
-                  <AnnotationCircleSubject radius={4} stroke={defaultColors[idx] % defaultColors.length} />
+              <Fragment key={puzzle.user}>
+                <LineSeries dataKey={puzzle.user} data={data} curve={curveBumpX} {...accessors} />
+                <Annotation dataKey={puzzle.user} datum={annotationDatum} {...accessors}>
+                  <AnnotationCircleSubject radius={4} stroke={defaultColors[idx % defaultColors.length]} />
                   <AnnotationLabel
                     showAnchorLine={false}
                     showBackground={false}
                     horizontalAnchor="start"
                     verticalAnchor="middle"
                     titleProps={{ fill: defaultColors[idx % defaultColors.length] }}
-                    title={solve.user}
+                    title={puzzle.user}
                   />
                 </Annotation>
-              </>
+              </Fragment>
             );
           })}
         <Tooltip

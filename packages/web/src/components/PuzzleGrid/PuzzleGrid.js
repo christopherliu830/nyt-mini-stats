@@ -23,9 +23,9 @@ export function PuzzleGrid({ puzzle, label, viewTime }) {
     rows.push(row);
   }
 
-  const blue = createColorScale('blue', [0, time]);
-  const yellow = createColorScale('yellow', [0, time]);
-  const red = createColorScale('red', [0, time]);
+  const blue = createColorScale('cornflowerblue', [0, time]);
+  const yellow = createColorScale('lightyellow', [0, time]);
+  const red = createColorScale('lightred', [0, time]);
 
   // If we rerender every time viewTime changes the scrubbing ends up slow
   // So, create a dependency array that changes only when a cell becomes visible/unvisible.
@@ -53,7 +53,7 @@ export function PuzzleGrid({ puzzle, label, viewTime }) {
       </Cell>
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, visibilityArray);
+  }, [visibilityArray]);
 
   return (
     <Table w="220px" border="4px solid" borderColor="black" tablelayout="fixed">

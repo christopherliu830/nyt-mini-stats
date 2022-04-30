@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { min, utcFormat, utcMonth, utcDay, utcParse } from 'd3';
+import { min, utcFormat, utcMonth, utcDay, utcParse, max } from 'd3';
 import { storage } from '../storage.mjs';
 import { request } from 'express';
 
@@ -23,6 +23,25 @@ export function range() {
   }));
 
   return ranges;
+}
+
+/**
+ * Massage the data so that the puzzle info makes more logical sense
+ * @param {object} puzzle 
+ */
+function adjust(puzzle) {
+  // Line up secondsSpentSolving and the last cell's timestamp.
+  if (puzzle.calcs.secondsSpentSolving) {
+    console.log(puzzle, JSON.stringify(puzzle.board));
+    const delta = puzzle.calcs.secondsSpentSolving - max(puzzle.board.cells, c => c.timestamp);
+    puzzle.board.cells = puzzle.board.cells.map(cell => ({
+      ...cell,
+
+      // Sometimes the last timestamp is greater than secondsSpentSolving, in that case clamp values 
+      timestamp: cell.timestamp && max([0, cell.timestamp + delta]),
+    }))
+  }
+  return puzzle;
 }
 
 export async function puzzleByDate(token, date, useCache) {
@@ -54,7 +73,8 @@ export async function getPuzzles(token, dates, useCache) {
     .flat()
     .map(puzzle => ({ ...puzzle, date: parseDate(puzzle.print_date) }));
 
-  return await getSolves(token, puzzles);
+  const solves = await getSolves(token, puzzles);
+  return solves.map(adjust);
 }
 
 async function getSolves(token, puzzles) {

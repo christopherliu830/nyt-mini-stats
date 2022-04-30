@@ -32,7 +32,6 @@ export function range() {
 function adjust(puzzle) {
   // Line up secondsSpentSolving and the last cell's timestamp.
   if (puzzle.calcs.secondsSpentSolving) {
-    console.log(puzzle, JSON.stringify(puzzle.board));
     const delta = puzzle.calcs.secondsSpentSolving - max(puzzle.board.cells, c => c.timestamp);
     puzzle.board.cells = puzzle.board.cells.map(cell => ({
       ...cell,
@@ -55,9 +54,11 @@ export async function puzzleByDate(token, date, useCache) {
 }
 
 export async function getPuzzles(token, dates, useCache) {
+
   const ranges = dates ? [dates] : range();
-  const puzzles = (
-    await Promise.all(ranges.map(({start, end}) => {
+ 
+  const search = async (cached) => (
+    (await Promise.all(ranges.map(({start, end}) => {
       const searchParams = new URLSearchParams({
         publish_type: 'mini',
         date_start: start,
@@ -66,12 +67,19 @@ export async function getPuzzles(token, dates, useCache) {
         sort_by: 'print_date'
       }).toString();
       const url = `${PUZZLE_INFO}?${searchParams}`;
-      return requestNyt(url, token, useCache);
-    }))
+      return requestNyt(url, token, cached);
+    })))
+      .map(puzzle => puzzle.results)
+      .flat()
+      .filter(puzzle => puzzle) // Filter out null result queries
+      .map(puzzle => ({ ...puzzle, date: parseDate(puzzle.print_date)}))
   )
-    .map(puzzle => puzzle.results)
-    .flat()
-    .map(puzzle => ({ ...puzzle, date: parseDate(puzzle.print_date) }));
+
+  let puzzles = await search(useCache);
+    
+  if (puzzles.length === 0) {
+    let puzzles = await search(false); // Force the query again if no results found.
+  }
 
   const solves = await getSolves(token, puzzles);
   return solves.map(adjust);

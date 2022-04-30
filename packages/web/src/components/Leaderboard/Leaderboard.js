@@ -1,6 +1,6 @@
-import { Box, Table, Tbody, Th, Thead, Tr, Td } from '@chakra-ui/react';
+import { Table, Tbody, Th, Thead, Tr, Td } from '@chakra-ui/react';
 
-const formatTime = (time) => time ? `${Math.floor(time/60)}:${time%60}` : null;
+const formatTime = (time) => (time ? `${Math.floor(time / 60)}:${time % 60}` : null);
 
 export function Leaderboard({ stats, ...rest }) {
   const placements = [...stats].sort(
@@ -26,12 +26,15 @@ export function Leaderboard({ stats, ...rest }) {
         </Tr>
       </Thead>
       <Tbody>
-        {placements.map(({ user, puzzle }) => (puzzle && 
-          <Tr key={user}>
-            <Td fontWeight={600}>{user}</Td>
-            <Td>{formatTime(puzzle?.calcs.secondsSpentSolving) ?? 'Not Done'}</Td>
-          </Tr>
-        ))}
+        {placements.map(
+          ({ user, puzzle }) =>
+            puzzle && (
+              <Tr key={user}>
+                <Td fontWeight={600}>{user}</Td>
+                <Td>{formatTime(puzzle?.calcs.secondsSpentSolving) ?? 'Not Done'}</Td>
+              </Tr>
+            )
+        )}
       </Tbody>
     </Table>
   );

@@ -1,10 +1,3 @@
-import { min, utcFormat, utcMonth, utcDay, utcParse } from 'd3';
-
-const API_ROOT = 'https://nyt-games-prd.appspot.com/svc/crosswords';
-const PUZZLE_INFO = `${API_ROOT}/v3/puzzles.json`;
-const SOLVE_INFO = `${API_ROOT}/v6/game`;
-const DATE_FORMAT = '%Y-%m-%d';
-
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
 export async function login({ username, token }) {
@@ -12,22 +5,22 @@ export async function login({ username, token }) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json',
     },
-    body: JSON.stringify({ username, token })
-  })
+    body: JSON.stringify({ username, token }),
+  });
   const data = await response.text();
   return data;
 }
 
 export async function puzzleByDate(name, date) {
-  const response = await fetch(baseUrl + `/api/puzzles?name=${name}&date=${date}`)
+  const response = await fetch(baseUrl + `/api/puzzles?name=${name}&date=${date}`);
   const data = await response.json();
   return data[0];
 }
 
 export async function getPuzzles(name) {
-  const response = await fetch(baseUrl + `/api/puzzles?name=${name}`)
+  const response = await fetch(baseUrl + `/api/puzzles?name=${name}`);
   const data = await response.json();
   return data;
 }
@@ -39,8 +32,8 @@ export async function getSolves(name, puzzles) {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(puzzles)
-  })
+    body: JSON.stringify(puzzles),
+  });
   const data = await response.json();
   return data;
 }

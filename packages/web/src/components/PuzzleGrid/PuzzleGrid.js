@@ -1,7 +1,6 @@
 import { Table, Tr, Td, Tbody, Thead, Th, Text } from '@chakra-ui/react';
 import { scaleLinear } from 'd3';
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { puzzleByDate } from '../../api/nyt';
+import { useCallback } from 'react';
 
 const Cell = (props) => (
   <Td border="2px solid rgba(0, 0, 0, 0.2)" textAlign="center" fontWeight="600" p="0" {...props} />
@@ -10,7 +9,6 @@ const Cell = (props) => (
 const createColorScale = (color, domain) => scaleLinear().domain(domain).range(['white', color]);
 
 export function PuzzleGrid({ puzzle, label, viewTime }) {
-
   const { cells } = puzzle.board;
   const time = puzzle.calcs.secondsSpentSolving;
 
@@ -31,38 +29,30 @@ export function PuzzleGrid({ puzzle, label, viewTime }) {
 
   // If we rerender every time viewTime changes the scrubbing ends up slow
   // So, create a dependency array that changes only when a cell becomes visible/unvisible.
-  const visibilityArray = puzzle.board.cells.map(cell => viewTime >= cell.timestamp);
+  const visibilityArray = puzzle.board.cells.map((cell) => viewTime >= cell.timestamp);
 
   const drawCell = useCallback((cell, key) => {
-    const visibility = (cell.blank || viewTime >= cell.timestamp) ? 'visible' : 'hidden';
+    const visibility = cell.blank || viewTime >= cell.timestamp ? 'visible' : 'hidden';
 
     let bg = 'white';
     if (cell.checked) {
       bg = red(cell.timestamp);
-    }
-    else if (cell.confirmed) {
+    } else if (cell.confirmed) {
       bg = yellow(cell.timestamp);
-    }
-    else if (cell.blank) {
+    } else if (cell.blank) {
       bg = 'black';
-    }
-    else {
-      bg = blue(cell.timestamp)
+    } else {
+      bg = blue(cell.timestamp);
     }
 
     return (
-      <Cell
-        key={key}
-        bg={bg}
-        w={`${100 / width}%`}
-        visibility={visibility}
-      >
+      <Cell key={key} bg={bg} w={`${100 / width}%`} visibility={visibility}>
         <Text position="relative" fontSize="2xl">
           {cell.guess}
         </Text>
       </Cell>
     );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, visibilityArray);
 
   return (
@@ -71,7 +61,7 @@ export function PuzzleGrid({ puzzle, label, viewTime }) {
         <Tr>
           <Th colSpan={width} textAlign="center" borderBottom="2px solid" borderColor="black" pl={0} pr={0}>
             <Text position="relative" fontSize="2xl">
-              {label} - {`${Math.floor(time/60)}:${time % 60}`}
+              {label} - {`${Math.floor(time / 60)}:${time % 60}`}
             </Text>
           </Th>
         </Tr>

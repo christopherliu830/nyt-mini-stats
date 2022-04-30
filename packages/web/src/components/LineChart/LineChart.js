@@ -49,8 +49,6 @@ export function LineChart({ solves, viewTime }) {
     return marks;
   };
 
-  const data = solves.map((solve) => formatPuzzle(solve.puzzle));
-
   const accessors = {
     xAccessor: (d) => d?.x,
     yAccessor: (d) => d?.y,

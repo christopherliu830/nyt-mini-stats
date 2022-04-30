@@ -1,30 +1,21 @@
-import React, { HTMLAttributes } from 'react';
+import React from 'react';
 import ReactDatePicker from 'react-datepicker';
-import { Box, useColorMode } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import './date-picker.css';
 
-export function DatePicker({
-  selected,
-  onChange,
-  isClearable = false,
-  showPopperArrow = false,
-  ...props
-}) {
-  const isLight = useColorMode().colorMode==='light';//you can check what theme you are using right now however you want
+export function DatePicker({ selected, onChange, isClearable = false, showPopperArrow = false, ...props }) {
   return (
-    // if you don't want to use chakra's colors or you just wwant to use the original ones, 
-    // set className to "light-theme-original" ↓↓↓↓
-    <Box className='light-theme' {...props}>
+    <Box className="light-theme-original" {...props}>
       <ReactDatePicker
         selected={selected}
         onChange={onChange}
         isClearable={isClearable}
         showPopperArrow={showPopperArrow}
-        className="react-datapicker__input-text"//input is white by default and there is no already defined class for it so I created a new one
+        className="react-datapicker__input-text" //input is white by default and there is no already defined class for it so I created a new one
         {...props}
       />
     </Box>
   );
-};
+}

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Box, Button, ChakraProvider, Container, FormControl, FormLabel, Input, Text } from '@chakra-ui/react';
-import { getPuzzles, getUsers, puzzleByDate } from './api/nyt';
-import { PuzzleGrid } from './components/PuzzleGrid';
+import { ChakraProvider, Container } from '@chakra-ui/react';
+import { getUsers, puzzleByDate } from './api/nyt';
 import { Leaderboard } from './components/Leaderboard';
 import { DatePicker } from './components/DatePicker';
 import { timeFormat } from 'd3';
@@ -16,12 +15,11 @@ function App() {
 
   useEffect(() => {
     getUsers().then(setUsers);
-  }, [])
+  }, []);
 
   useEffect(() => {
-    const dateString = formatDate(date); 
-    Promise.all(users.map(async user => ({ user, puzzle: await puzzleByDate(user, dateString) })))
-      .then(setSolves);
+    const dateString = formatDate(date);
+    Promise.all(users.map(async (user) => ({ user, puzzle: await puzzleByDate(user, dateString) }))).then(setSolves);
   }, [users, date]);
 
   return (
